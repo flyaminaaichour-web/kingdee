@@ -28,8 +28,7 @@ function HomePage() {
             </h1>
           </div>
           <p className="text-lg text-gray-600 max-w-2xl mx-auto">
-            Comprehensive business management solutions for modern enterprises. 
-            Access our integrated systems for auditing and legal case management.
+            Projects - Front End of Kingdee Project Proposals for Clients for Demonstration purpose. Please be aware that some of the features are disabled.
           </p>
         </div>
 
