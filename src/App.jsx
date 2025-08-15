@@ -4,6 +4,7 @@ import { LanguageProvider as LegalLanguageProvider } from './contexts/legal/Lang
 import HomePage from './components/HomePage'
 import AuditorApp from './components/AuditorApp'
 import LegalApp from './components/LegalApp'
+import DataRequestSystem from './components/DataRequestSystem'
 import './App.css'
 
 function App() {
@@ -26,6 +27,9 @@ function App() {
             <LegalApp />
           </LegalLanguageProvider>
         } />
+        
+        {/* Data Request System Route */}
+        <Route path="/data-request" element={<DataRequestSystem />} />
         
         {/* Redirect any unknown routes to home */}
         <Route path="*" element={<Navigate to="/" replace />} />

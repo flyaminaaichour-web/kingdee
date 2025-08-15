@@ -11,11 +11,13 @@ function HomePage() {
   const handleAuditorFrontEnd = () => {
     navigate('/auditor')
   }
-
   const handleLegalCaseManagement = () => {
-    navigate('/legal')
-  }
+    navigate("/legal");
+  };
 
+  const handleDataRequestSystem = () => {
+    navigate("/data-request");
+  };
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50">
       {/* Header */}
@@ -141,6 +143,62 @@ function HomePage() {
                     }}
                   >
                     Access Legal System
+                    <ArrowRight className="ml-2 h-4 w-4" />
+                  </Button>
+                </div>
+              </CardContent>
+            </Card>
+
+            {/* Data Request System Card */}
+            <Card 
+              className={`cursor-pointer transition-all duration-300 hover:shadow-xl border-2 ${
+                hoveredCard === 'data-request' ? 'border-green-500 shadow-lg scale-105' : 'border-gray-200'
+              }`}
+              onMouseEnter={() => setHoveredCard('data-request')}
+              onMouseLeave={() => setHoveredCard(null)}
+              onClick={handleDataRequestSystem}
+            >
+              <CardHeader className="text-center pb-4">
+                <div className="flex justify-center mb-4">
+                  <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center">
+                    <FileText className="h-8 w-8 text-green-600" />
+                  </div>
+                </div>
+                <CardTitle className="text-2xl font-bold text-gray-900">
+                  Data Request System
+                </CardTitle>
+                <CardDescription className="text-gray-600 text-base">
+                  Streamline and digitize the process of dataset requests
+                </CardDescription>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <div className="space-y-3">
+                  <div className="flex items-center text-sm text-gray-600">
+                    <div className="w-2 h-2 bg-green-500 rounded-full mr-3"></div>
+                    Online Submission Form
+                  </div>
+                  <div className="flex items-center text-sm text-gray-600">
+                    <div className="w-2 h-2 bg-green-500 rounded-full mr-3"></div>
+                    Multi-department Routing
+                  </div>
+                  <div className="flex items-center text-sm text-gray-600">
+                    <div className="w-2 h-2 bg-green-500 rounded-full mr-3"></div>
+                    Request Tracking Interface
+                  </div>
+                  <div className="flex items-center text-sm text-gray-600">
+                    <div className="w-2 h-2 bg-green-500 rounded-full mr-3"></div>
+                    NDA Upload Workflow
+                  </div>
+                </div>
+                <div className="pt-4">
+                  <Button 
+                    className="w-full bg-green-600 hover:bg-green-700 text-white"
+                    onClick={(e) => {
+                      e.stopPropagation()
+                      handleDataRequestSystem()
+                    }}
+                  >
+                    Access Data Request System
                     <ArrowRight className="ml-2 h-4 w-4" />
                   </Button>
                 </div>
