@@ -24,7 +24,7 @@ function HomePage() {
           <div className="flex items-center justify-center mb-6">
             <Building2 className="h-12 w-12 text-blue-600 mr-4" />
             <h1 className="text-4xl md:text-5xl font-bold text-gray-900">
-              Kingdee Qatar Projects
+              Kingdee Qatar Demo projects
             </h1>
           </div>
           <p className="text-lg text-gray-600 max-w-2xl mx-auto">
