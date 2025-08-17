@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Building2, FileText, Scale } from 'lucide-react';
+import { Building2, FileText, Scale, User, Mail, Phone, MapPin, Briefcase, CalendarDays } from 'lucide-react';
 import { Button } from '@/components/ui/button.jsx';
 import { Input } from '@/components/ui/input.jsx';
 import { Textarea } from '@/components/ui/textarea.jsx';
@@ -12,6 +12,20 @@ function DataRequestSystem() {
   const [activeTab, setActiveTab] = useState('submission');
   const [trackingId, setTrackingId] = useState('');
   const [formData, setFormData] = useState({
+    fullName: '',
+    qatariId: '',
+    nationality: '',
+    email: '',
+    mobile: '',
+    poBox: '',
+    employer: '',
+    address: '',
+    entityType: '',
+    infoDescription: '',
+    timePeriodFrom: '',
+    timePeriodTo: '',
+    preferredMethod: 'personal-delivery',
+    publishPermission: 'no',
     datasetName: '',
     dataType: '',
     classification: 'non-classified',
@@ -23,12 +37,12 @@ function DataRequestSystem() {
     setFormData((prevData) => ({ ...prevData, [id]: value }));
   };
 
-  const handleSelectChange = (value) => {
-    setFormData((prevData) => ({ ...prevData, dataType: value }));
+  const handleSelectChange = (id, value) => {
+    setFormData((prevData) => ({ ...prevData, [id]: value }));
   };
 
-  const handleRadioChange = (value) => {
-    setFormData((prevData) => ({ ...prevData, classification: value }));
+  const handleRadioChange = (id, value) => {
+    setFormData((prevData) => ({ ...prevData, [id]: value }));
   };
 
   const handleSubmit = (e) => {
@@ -43,6 +57,20 @@ function DataRequestSystem() {
 
   const handleReset = () => {
     setFormData({
+      fullName: '',
+      qatariId: '',
+      nationality: '',
+      email: '',
+      mobile: '',
+      poBox: '',
+      employer: '',
+      address: '',
+      entityType: '',
+      infoDescription: '',
+      timePeriodFrom: '',
+      timePeriodTo: '',
+      preferredMethod: 'personal-delivery',
+      publishPermission: 'no',
       datasetName: '',
       dataType: '',
       classification: 'non-classified',
@@ -69,22 +97,121 @@ function DataRequestSystem() {
             </h1>
           </div>
           <p className="text-lg text-gray-600 max-w-2xl mx-auto">
-            A system to streamline and digitize the process of dataset requests, 
-            including online submission, multi-department routing, and request tracking.
+            A system to streamline and digitize the process of dataset requests,
+            including online submission, multi-department routing, and request
+            tracking.
           </p>
         </div>
 
         <div className="max-w-6xl mx-auto p-8 bg-white rounded-lg shadow-lg">
           {activeTab === 'submission' && (
             <form onSubmit={handleSubmit} className="space-y-6">
-              <h2 className="text-2xl font-bold text-gray-800 mb-4">Request a Dataset</h2>
+              <h2 className="text-2xl font-bold text-gray-800 mb-4">Personal Information</h2>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div>
+                  <Label htmlFor="fullName">Full Name *</Label>
+                  <Input type="text" id="fullName" placeholder="Full Name" value={formData.fullName} onChange={handleInputChange} required />
+                </div>
+                <div>
+                  <Label htmlFor="nationality">Nationality *</Label>
+                  <Input type="text" id="nationality" placeholder="Nationality" value={formData.nationality} onChange={handleInputChange} required />
+                </div>
+                <div>
+                  <Label htmlFor="qatariId">Qatari ID No. *</Label>
+                  <Input type="text" id="qatariId" placeholder="Qatari ID No." value={formData.qatariId} onChange={handleInputChange} required />
+                </div>
+                <div>
+                  <Label htmlFor="residencyType">Residency Type *</Label>
+                  <Input type="text" id="residencyType" placeholder="Residency Type" value={formData.residencyType} onChange={handleInputChange} required />
+                </div>
+                <div>
+                  <Label htmlFor="email">E-Mail *</Label>
+                  <Input type="email" id="email" placeholder="username@email.com" value={formData.email} onChange={handleInputChange} required />
+                </div>
+                <div>
+                  <Label htmlFor="mobile">Mobile *</Label>
+                  <Input type="tel" id="mobile" placeholder="Mobile" value={formData.mobile} onChange={handleInputChange} required />
+                </div>
+                <div>
+                  <Label htmlFor="poBox">P.O. Box</Label>
+                  <Input type="text" id="poBox" placeholder="P.O. Box" value={formData.poBox} onChange={handleInputChange} />
+                </div>
+                <div>
+                  <Label htmlFor="employer">Employer</Label>
+                  <Input type="text" id="employer" placeholder="Employer" value={formData.employer} onChange={handleInputChange} />
+                </div>
+                <div>
+                  <Label htmlFor="address">National/Personal Address</Label>
+                  <Input type="text" id="address" placeholder="National/Personal Address" value={formData.address} onChange={handleInputChange} />
+                </div>
+                <div>
+                  <Label htmlFor="entityType">Type of Entity</Label>
+                  <Select onValueChange={(val) => handleSelectChange('entityType', val)} value={formData.entityType}>
+                    <SelectTrigger>
+                      <SelectValue placeholder="Select" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="individual">Individual</SelectItem>
+                      <SelectItem value="company">Company</SelectItem>
+                      <SelectItem value="government">Government</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+              </div>
+
+              <h2 className="text-2xl font-bold text-gray-800 mb-4 mt-8">Information Requested</h2>
+              <div>
+                <Label htmlFor="infoDescription">A brief and clear description of the information you wish to obtain. Please be specific in describing your information as much as possible.</Label>
+                <Textarea id="infoDescription" value={formData.infoDescription} onChange={handleInputChange} />
+              </div>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div>
+                  <Label htmlFor="timePeriodFrom">Time period of the requested information - From</Label>
+                  <Input type="date" id="timePeriodFrom" value={formData.timePeriodFrom} onChange={handleInputChange} />
+                </div>
+                <div>
+                  <Label htmlFor="timePeriodTo">To</Label>
+                  <Input type="date" id="timePeriodTo" value={formData.timePeriodTo} onChange={handleInputChange} />
+                </div>
+              </div>
+
+              <h2 className="text-2xl font-bold text-gray-800 mb-4 mt-8">Preferred method of receiving information *</h2>
+              <p className="text-sm text-gray-600 mb-4">The entity may impose a fee for obtaining the information that will not exceed the cost of preparing and delivering it in its final form.</p>
+              <RadioGroup onValueChange={(val) => handleRadioChange('preferredMethod', val)} value={formData.preferredMethod} className="flex space-x-4">
+                <div className="flex items-center space-x-2">
+                  <RadioGroupItem value="personal-delivery" id="personal-delivery" />
+                  <Label htmlFor="personal-delivery">Personal Delivery</Label>
+                </div>
+                <div className="flex items-center space-x-2">
+                  <RadioGroupItem value="e-mail" id="e-mail" />
+                  <Label htmlFor="e-mail">E-Mail</Label>
+                </div>
+                <div className="flex items-center space-x-2">
+                  <RadioGroupItem value="normal-mail" id="normal-mail" />
+                  <Label htmlFor="normal-mail">Normal Mail</Label>
+                </div>
+              </RadioGroup>
+
+              <h2 className="text-2xl font-bold text-gray-800 mb-4 mt-8">Obtaining permission to publish the information *</h2>
+              <RadioGroup onValueChange={(val) => handleRadioChange('publishPermission', val)} value={formData.publishPermission} className="flex space-x-4">
+                <div className="flex items-center space-x-2">
+                  <RadioGroupItem value="yes" id="publish-yes" />
+                  <Label htmlFor="publish-yes">Yes</Label>
+                </div>
+                <div className="flex items-center space-x-2">
+                  <RadioGroupItem value="no" id="publish-no" />
+                  <Label htmlFor="publish-no">No</Label>
+                </div>
+              </RadioGroup>
+
+              <h2 className="text-2xl font-bold text-gray-800 mb-4 mt-8">Dataset Request Details</h2>
               <div>
                 <Label htmlFor="datasetName">Dataset Name</Label>
                 <Input type="text" id="datasetName" placeholder="e.g., Population Estimates 2023" value={formData.datasetName} onChange={handleInputChange} required />
               </div>
               <div>
                 <Label htmlFor="dataType">Data Type</Label>
-                <Select onValueChange={handleSelectChange} value={formData.dataType} required>
+                <Select onValueChange={(val) => handleSelectChange('dataType', val)} value={formData.dataType} required>
                   <SelectTrigger>
                     <SelectValue placeholder="Select a data type" />
                   </SelectTrigger>
@@ -98,7 +225,7 @@ function DataRequestSystem() {
               </div>
               <div>
                 <Label>Classification</Label>
-                <RadioGroup onValueChange={handleRadioChange} value={formData.classification} className="flex space-x-4">
+                <RadioGroup onValueChange={(val) => handleRadioChange('classification', val)} value={formData.classification} className="flex space-x-4">
                   <div className="flex items-center space-x-2">
                     <RadioGroupItem value="non-classified" id="non-classified" />
                     <Label htmlFor="non-classified">Non-Classified</Label>
