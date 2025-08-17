@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom'
 import { Button } from '@/components/ui/button.jsx'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card.jsx'
 import { FileText, Scale, Building2, ArrowRight } from 'lucide-react'
+import KingdeeLogo from '@/assets/KD-01-1.svg'
 
 function HomePage() {
   const [hoveredCard, setHoveredCard] = useState(null)
@@ -12,6 +13,7 @@ function HomePage() {
       {/* Header */}
       <div className="container mx-auto px-4 py-8">
         <div className="text-center mb-12">
+          <img src={KingdeeLogo} alt="Kingdee Logo" className="mx-auto mb-6" style={{ width: '200px' }} />
           <div className="flex items-center justify-center mb-6">
             <Building2 className="h-12 w-12 text-blue-600 mr-4" />
             <h1 className="text-4xl md:text-5xl font-bold text-gray-900">
@@ -201,5 +203,7 @@ function HomePage() {
 }
 
 export default HomePage
+
+
 
 
