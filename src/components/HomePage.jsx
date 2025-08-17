@@ -1,23 +1,12 @@
 import { useState } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { Link } from 'react-router-dom'
 import { Button } from '@/components/ui/button.jsx'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card.jsx'
 import { FileText, Scale, Building2, ArrowRight } from 'lucide-react'
 
 function HomePage() {
   const [hoveredCard, setHoveredCard] = useState(null)
-  const navigate = useNavigate()
 
-  const handleAuditorFrontEnd = () => {
-    navigate('/auditor')
-  }
-  const handleLegalCaseManagement = () => {
-    navigate("/legal");
-  };
-
-  const handleDataRequestSystem = () => {
-    navigate("/data-request");
-  };
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50">
       {/* Header */}
@@ -44,7 +33,6 @@ function HomePage() {
               }`}
               onMouseEnter={() => setHoveredCard('auditor')}
               onMouseLeave={() => setHoveredCard(null)}
-              onClick={handleAuditorFrontEnd}
             >
               <CardHeader className="text-center pb-4">
                 <div className="flex justify-center mb-4">
@@ -79,16 +67,14 @@ function HomePage() {
                   </div>
                 </div>
                 <div className="pt-4">
-                  <Button 
-                    className="w-full bg-blue-600 hover:bg-blue-700 text-white"
-                    onClick={(e) => {
-                      e.stopPropagation()
-                      handleAuditorFrontEnd()
-                    }}
-                  >
-                    Access Auditor System
-                    <ArrowRight className="ml-2 h-4 w-4" />
-                  </Button>
+                  <Link to="/auditor">
+                    <Button 
+                      className="w-full bg-blue-600 hover:bg-blue-700 text-white"
+                    >
+                      Access Auditor System
+                      <ArrowRight className="ml-2 h-4 w-4" />
+                    </Button>
+                  </Link>
                 </div>
               </CardContent>
             </Card>
@@ -100,7 +86,6 @@ function HomePage() {
               }`}
               onMouseEnter={() => setHoveredCard('legal')}
               onMouseLeave={() => setHoveredCard(null)}
-              onClick={handleLegalCaseManagement}
             >
               <CardHeader className="text-center pb-4">
                 <div className="flex justify-center mb-4">
@@ -135,16 +120,14 @@ function HomePage() {
                   </div>
                 </div>
                 <div className="pt-4">
-                  <Button 
-                    className="w-full bg-purple-600 hover:bg-purple-700 text-white"
-                    onClick={(e) => {
-                      e.stopPropagation()
-                      handleLegalCaseManagement()
-                    }}
-                  >
-                    Access Legal System
-                    <ArrowRight className="ml-2 h-4 w-4" />
-                  </Button>
+                  <Link to="/legal">
+                    <Button 
+                      className="w-full bg-purple-600 hover:bg-purple-700 text-white"
+                    >
+                      Access Legal System
+                      <ArrowRight className="ml-2 h-4 w-4" />
+                    </Button>
+                  </Link>
                 </div>
               </CardContent>
             </Card>
@@ -156,7 +139,6 @@ function HomePage() {
               }`}
               onMouseEnter={() => setHoveredCard('data-request')}
               onMouseLeave={() => setHoveredCard(null)}
-              onClick={handleDataRequestSystem}
             >
               <CardHeader className="text-center pb-4">
                 <div className="flex justify-center mb-4">
@@ -191,16 +173,14 @@ function HomePage() {
                   </div>
                 </div>
                 <div className="pt-4">
-                  <Button 
-                    className="w-full bg-green-600 hover:bg-green-700 text-white"
-                    onClick={(e) => {
-                      e.stopPropagation()
-                      handleDataRequestSystem()
-                    }}
-                  >
-                    Access Data Request System
-                    <ArrowRight className="ml-2 h-4 w-4" />
-                  </Button>
+                  <Link to="/data-request">
+                    <Button 
+                      className="w-full bg-green-600 hover:bg-green-700 text-white"
+                    >
+                      Access Data Request System
+                      <ArrowRight className="ml-2 h-4 w-4" />
+                    </Button>
+                  </Link>
                 </div>
               </CardContent>
             </Card>
@@ -221,4 +201,5 @@ function HomePage() {
 }
 
 export default HomePage
+
 
