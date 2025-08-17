@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom'
 import { Button } from '@/components/ui/button.jsx'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card.jsx'
 import { FileText, Scale, Building2, ArrowRight } from 'lucide-react'
-import KingdeeLogo from '@/assets/KD-01-1.svg'
+import KingdeeLogo from '@/assets/kingdee-png.png'
 
 function HomePage() {
   const [hoveredCard, setHoveredCard] = useState(null)
