@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Building2, FileText, Scale, User, Mail, Phone, MapPin, Briefcase, CalendarDays } from 'lucide-react';
+import { Building2, FileText, Scale, User, Mail, Phone, MapPin, Briefcase, CalendarDays, UploadCloud } from 'lucide-react';
 import { Button } from '@/components/ui/button.jsx';
 import { Input } from '@/components/ui/input.jsx';
 import { Textarea } from '@/components/ui/textarea.jsx';
@@ -31,6 +31,7 @@ function DataRequestSystem() {
     classification: 'non-classified',
     purpose: '',
   });
+  const [ndaFile, setNdaFile] = useState(null);
 
   const handleInputChange = (e) => {
     const { id, value } = e.target;
@@ -45,6 +46,10 @@ function DataRequestSystem() {
     setFormData((prevData) => ({ ...prevData, [id]: value }));
   };
 
+  const handleFileChange = (e) => {
+    setNdaFile(e.target.files[0]);
+  };
+
   const handleSubmit = (e) => {
     e.preventDefault();
     // In a real application, you would send this data to a backend.
@@ -53,6 +58,9 @@ function DataRequestSystem() {
     setTrackingId(`#${newTrackingId}`);
     setActiveTab('success');
     console.log('Form Data Submitted:', formData);
+    if (ndaFile) {
+      console.log('NDA File:', ndaFile.name);
+    }
   };
 
   const handleReset = () => {
@@ -77,6 +85,7 @@ function DataRequestSystem() {
       purpose: '',
     });
     setTrackingId('');
+    setNdaFile(null);
     setActiveTab('submission');
   };
 
@@ -84,6 +93,13 @@ function DataRequestSystem() {
     e.preventDefault();
     // In a real application, this would fetch data from a backend based on trackingId
     setActiveTab('tracking');
+  };
+
+  const handleNdaUpload = (e) => {
+    e.preventDefault();
+    // Simulate NDA upload success
+    setActiveTab('nda-success');
+    console.log('NDA Uploaded:', ndaFile.name);
   };
 
   return (
@@ -236,6 +252,16 @@ function DataRequestSystem() {
                   </div>
                 </RadioGroup>
               </div>
+              {formData.classification === 'classified' && (
+                <div className="space-y-4">
+                  <h2 className="text-2xl font-bold text-gray-800 mb-4 mt-8">NDA Upload</h2>
+                  <p className="text-sm text-gray-600 mb-4">Please upload your signed NDA to proceed. (PDF/DOCX only)</p>
+                  <div>
+                    <Label htmlFor="ndaFile">Upload NDA</Label>
+                    <Input type="file" id="ndaFile" accept=".pdf,.docx" onChange={handleFileChange} required />
+                  </div>
+                </div>
+              )}
               <div>
                 <Label htmlFor="purpose">Purpose of Use</Label>
                 <Textarea id="purpose" placeholder="Describe the purpose of your request" value={formData.purpose} onChange={handleInputChange} required />
@@ -254,7 +280,37 @@ function DataRequestSystem() {
                 Your request has been submitted. Tracking ID: <span className="font-bold text-blue-600">{trackingId}</span>
               </p>
               <p className="text-gray-600">Please keep this ID to track your request status.</p>
+              {formData.classification === 'classified' && !ndaFile && (
+                <div className="space-y-4">
+                  <p className="text-red-500">Please upload your NDA to complete the request.</p>
+                  <Button onClick={() => setActiveTab('nda-upload')}>Upload NDA</Button>
+                </div>
+              )}
               <Button onClick={() => setActiveTab('tracking-input')}>Track Another Request</Button>
+            </div>
+          )}
+
+          {activeTab === 'nda-upload' && (
+            <form onSubmit={handleNdaUpload} className="space-y-4">
+              <h2 className="text-2xl font-bold text-gray-800">NDA Upload</h2>
+              <p className="text-sm text-gray-600 mb-4">Please upload your signed NDA to proceed. (PDF/DOCX only)</p>
+              <div>
+                <Label htmlFor="ndaFile">Upload NDA</Label>
+                <Input type="file" id="ndaFile" accept=".pdf,.docx" onChange={handleFileChange} required />
+              </div>
+              <div className="flex justify-end">
+                <Button type="submit">Submit NDA</Button>
+              </div>
+            </form>
+          )}
+
+          {activeTab === 'nda-success' && (
+            <div className="text-center space-y-4">
+              <h2 className="text-2xl font-bold text-gray-800">NDA Received!</h2>
+              <p className="text-lg text-gray-700">
+                Your NDA has been received. Awaiting approval.
+              </p>
+              <Button onClick={() => setActiveTab('tracking-input')}>Track Request Status</Button>
             </div>
           )}
 
