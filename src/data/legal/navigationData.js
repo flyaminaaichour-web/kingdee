@@ -30,10 +30,10 @@ export const getNavigationItems = (t) => [
     label: 'Archives',
     icon: 'Archive',
     subItems: [
-      { id: 'meetings', label: 'Meeting Minutes' },
+      { id: 'meeting-minutes', label: 'Meeting Minutes' },
       { id: 'agreements', label: 'Agreements' },
-      { id: 'legislative', label: 'Legislative Opinions' },
-      { id: 'opinions', label: 'Legal Opinions' },
+      { id: 'legislative-opinions', label: 'Legislative Opinions' },
+      { id: 'legal-opinions', label: 'Legal Opinions' },
       { id: 'settlements', label: 'Settlements' }
     ]
   },

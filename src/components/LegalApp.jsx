@@ -6,6 +6,7 @@ import Investigations from './legal/Investigations'
 import Contracts from './legal/Contracts'
 import DisciplinaryCommittee from './legal/DisciplinaryCommittee'
 import Archives from './legal/Archives'
+import ArchiveDetail from './legal/ArchiveDetail'
 import Reports from './legal/Reports'
 import Settings from './legal/Settings'
 
@@ -19,6 +20,7 @@ function LegalApp() {
       <Route path="/contracts" element={<Layout currentPage="contracts"><Contracts /></Layout>} />
       <Route path="/disciplinary-committee" element={<Layout currentPage="disciplinary-committee"><DisciplinaryCommittee /></Layout>} />
       <Route path="/archives" element={<Layout currentPage="archives"><Archives /></Layout>} />
+      <Route path="/archives/:archiveType" element={<Layout currentPage="archives"><ArchiveDetail /></Layout>} />
       <Route path="/reports" element={<Layout currentPage="reports"><Reports /></Layout>} />
       <Route path="/settings" element={<Layout currentPage="settings"><Settings /></Layout>} />
       <Route path="*" element={<Navigate to="/legal" replace />} />

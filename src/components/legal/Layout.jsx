@@ -40,7 +40,12 @@ const Layout = ({ children, currentPage = 'dashboard' }) => {
   const navigate = useNavigate();
 
   const handleNavigate = (id) => {
-    navigate(`/legal/${id}`);
+    // Handle archive sub-items
+    if (id.includes('-') && ['meeting-minutes', 'agreements', 'legislative-opinions', 'legal-opinions', 'settlements'].includes(id)) {
+      navigate(`/legal/archives/${id}`);
+    } else {
+      navigate(`/legal/${id}`);
+    }
     setSidebarOpen(false); // Close sidebar on navigation
   };
 
@@ -66,36 +71,36 @@ const Layout = ({ children, currentPage = 'dashboard' }) => {
 
     return (
       <div>
-        <div
-          className={`flex items-center justify-between px-3 py-2 rounded-lg cursor-pointer transition-colors ${
-            isActive 
-              ? 'bg-blue-600 text-white' 
-              : 'text-gray-700 hover:bg-gray-100'
-          } ${level > 0 ? 'ml-4' : ''}`}
-          onClick={handleClick}
-        >
-          <div className="flex items-center space-x-3">
-            {Icon && <Icon className="h-5 w-5" />}
-            <span className="font-medium">{item.label}</span>
-          </div>
-          {hasSubItems && (
-            isExpanded ? <ChevronDown className="h-4 w-4" /> : <ChevronRight className="h-4 w-4" />
-          )}
+      <div
+        className={`flex items-center justify-between px-3 py-2 rounded-lg cursor-pointer transition-colors ${
+          isActive 
+            ? 'bg-blue-600 text-white' 
+            : 'text-gray-700 hover:bg-gray-100'
+        } ${level > 0 ? 'ml-4' : ''}`}
+        onClick={handleClick}
+      >
+        <div className="flex items-center space-x-3">
+          {Icon && <Icon className="h-5 w-5" />}
+          <span className="font-medium">{item.label}</span>
         </div>
-        
-        {hasSubItems && isExpanded && (
-          <div className="mt-1 space-y-1">
-            {item.subItems.map((subItem) => (
-              <NavItem 
-                key={subItem.id} 
-                item={subItem} 
-                isActive={currentPage === subItem.id}
-                level={level + 1}
-              />
-            ))}
-          </div>
+        {hasSubItems && (
+          isExpanded ? <ChevronDown className="h-4 w-4" /> : <ChevronRight className="h-4 w-4" />
         )}
       </div>
+      
+      {hasSubItems && isExpanded && (
+        <div className="mt-1 space-y-1">
+          {item.subItems.map((subItem) => (
+            <NavItem 
+              key={subItem.id} 
+              item={subItem} 
+              isActive={currentPage === subItem.id || (item.id === 'archives' && currentPage.startsWith('archives/') && currentPage.endsWith(subItem.id))}
+              level={level + 1}
+            />
+          ))}
+        </div>
+      )}
+    </div>
     );
   };
 
