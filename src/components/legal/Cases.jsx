@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   Search,
   Filter,
@@ -38,6 +38,14 @@ const Cases = () => {
     lastUpdate: new Date().toISOString().split('T')[0],
     summary: '',
   });
+
+  // Ensure IDs are numbers for Math.max to work correctly
+  useEffect(() => {
+    setCases(prevCases => prevCases.map(caseItem => ({
+      ...caseItem,
+      id: typeof caseItem.id === 'string' ? parseInt(caseItem.id.replace('C', '')) : caseItem.id
+    })));
+  }, []);
 
   const handleNewCaseChange = (e) => {
     const { id, value } = e.target;
