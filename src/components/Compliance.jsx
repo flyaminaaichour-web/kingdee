@@ -1,10 +1,11 @@
+
 import React, { useState } from 'react';
-import { Search, Filter, Shield, AlertTriangle, CheckCircle, Clock, FileText, TrendingUp, Calendar, Eye, Upload, Link } from 'lucide-react';
+import { Search, Filter, Shield, AlertTriangle, CheckCircle, Clock, FileText, TrendingUp, Calendar, Eye, Upload, Link, PlusCircle } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger, DialogFooter } from '@/components/ui/dialog';
 import { Badge } from '@/components/ui/badge';
 import { Progress } from '@/components/ui/progress';
 import { useLanguage } from '../contexts/LanguageContext';
@@ -17,9 +18,20 @@ const Compliance = () => {
   const [standardFilter, setStandardFilter] = useState('all');
   const [selectedCompliance, setSelectedCompliance] = useState(null);
   const [sidebarOpen, setSidebarOpen] = useState(true);
+  const [isNewComplianceModalOpen, setIsNewComplianceModalOpen] = useState(false);
+  const [newComplianceData, setNewComplianceData] = useState({
+    requirementId: '',
+    name: '',
+    standard: '',
+    status: 'Compliant',
+    lastAssessment: '',
+    nextReview: '',
+    responsible: '',
+    description: '',
+  });
 
   // Extended compliance data with more detailed information
-  const extendedCompliance = [
+  const [extendedCompliance, setExtendedCompliance] = useState([
     {
       id: "CMP-001",
       requirementId: "ISO-27001-A.12.1.2",
@@ -105,7 +117,46 @@ const Compliance = () => {
       dueDate: "2024-07-12",
       daysRemaining: 179
     }
-  ];
+  ]);
+
+  const handleNewComplianceChange = (e) => {
+    const { id, value } = e.target;
+    setNewComplianceData(prevData => ({ ...prevData, [id]: value }));
+  };
+
+  const handleNewComplianceSubmit = () => {
+    const newId = `CMP-${String(extendedCompliance.length + 1).padStart(3, '0')}`;
+    const today = new Date().toISOString().split('T')[0];
+    const nextReviewDate = new Date(newComplianceData.nextReview);
+    const diffTime = Math.abs(nextReviewDate - new Date());
+    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24)); 
+
+    setExtendedCompliance(prevCompliance => [
+      ...prevCompliance,
+      {
+        id: newId,
+        ...newComplianceData,
+        lastAssessment: today,
+        score: 0, // Default score for new compliance
+        evidence: [],
+        linkedAudits: [],
+        linkedRisks: [],
+        dueDate: newComplianceData.nextReview,
+        daysRemaining: diffDays,
+      },
+    ]);
+    setNewComplianceData({
+      requirementId: '',
+      name: '',
+      standard: '',
+      status: 'Compliant',
+      lastAssessment: '',
+      nextReview: '',
+      responsible: '',
+      description: '',
+    });
+    setIsNewComplianceModalOpen(false);
+  };
 
   const filteredCompliance = extendedCompliance.filter(item => {
     const matchesSearch = item.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -121,7 +172,7 @@ const Compliance = () => {
   const compliantCount = extendedCompliance.filter(item => item.status === 'Compliant').length;
   const inProgressCount = extendedCompliance.filter(item => item.status === 'In Progress').length;
   const gapCount = extendedCompliance.filter(item => item.status === 'Gap Found').length;
-  const overallScore = Math.round(extendedCompliance.reduce((sum, item) => sum + item.score, 0) / totalCompliance);
+  const overallScore = totalCompliance > 0 ? Math.round(extendedCompliance.reduce((sum, item) => sum + item.score, 0) / totalCompliance) : 0;
 
   // Upcoming deadlines (next 30 days)
   const upcomingDeadlines = extendedCompliance
@@ -293,10 +344,62 @@ const Compliance = () => {
             <FileText className="h-4 w-4 mr-2" />
             {t('exportPdfBtn')}
           </Button>
-          <Button>
-            <Shield className="h-4 w-4 mr-2" />
-            {t('newComplianceBtn')}
-          </Button>
+          <Dialog open={isNewComplianceModalOpen} onOpenChange={setIsNewComplianceModalOpen}>
+            <DialogTrigger asChild>
+              <Button>
+                <Shield className="h-4 w-4 mr-2" />
+                {t('newComplianceBtn')}
+              </Button>
+            </DialogTrigger>
+            <DialogContent className="sm:max-w-[600px]">
+              <DialogHeader>
+                <DialogTitle>Create New Compliance</DialogTitle>
+                <DialogDescription>Fill in the details for the new compliance requirement.</DialogDescription>
+              </DialogHeader>
+              <div className="grid gap-4 py-4">
+                <div className="grid grid-cols-4 items-center gap-4">
+                  <label htmlFor="requirementId" className="text-right">Requirement ID</label>
+                  <Input id="requirementId" value={newComplianceData.requirementId} onChange={handleNewComplianceChange} className="col-span-3" />
+                </div>
+                <div className="grid grid-cols-4 items-center gap-4">
+                  <label htmlFor="name" className="text-right">Name</label>
+                  <Input id="name" value={newComplianceData.name} onChange={handleNewComplianceChange} className="col-span-3" />
+                </div>
+                <div className="grid grid-cols-4 items-center gap-4">
+                  <label htmlFor="standard" className="text-right">Standard</label>
+                  <Input id="standard" value={newComplianceData.standard} onChange={handleNewComplianceChange} className="col-span-3" />
+                </div>
+                <div className="grid grid-cols-4 items-center gap-4">
+                  <label htmlFor="status" className="text-right">Status</label>
+                  <Select id="status" value={newComplianceData.status} onValueChange={(value) => setNewComplianceData(prevData => ({ ...prevData, status: value }))}>
+                    <SelectTrigger className="col-span-3">
+                      <SelectValue placeholder="Select Status" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="Compliant">Compliant</SelectItem>
+                      <SelectItem value="In Progress">In Progress</SelectItem>
+                      <SelectItem value="Gap Found">Gap Found</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+                <div className="grid grid-cols-4 items-center gap-4">
+                  <label htmlFor="nextReview" className="text-right">Next Review Date</label>
+                  <Input id="nextReview" type="date" value={newComplianceData.nextReview} onChange={handleNewComplianceChange} className="col-span-3" />
+                </div>
+                <div className="grid grid-cols-4 items-center gap-4">
+                  <label htmlFor="responsible" className="text-right">Responsible</label>
+                  <Input id="responsible" value={newComplianceData.responsible} onChange={handleNewComplianceChange} className="col-span-3" />
+                </div>
+                <div className="grid grid-cols-4 items-center gap-4">
+                  <label htmlFor="description" className="text-right">Description</label>
+                  <Input id="description" value={newComplianceData.description} onChange={handleNewComplianceChange} className="col-span-3" />
+                </div>
+              </div>
+              <DialogFooter>
+                <Button type="submit" onClick={handleNewComplianceSubmit}>Create Compliance</Button>
+              </DialogFooter>
+            </DialogContent>
+          </Dialog>
         </div>
       </div>
 
@@ -379,386 +482,207 @@ const Compliance = () => {
                     strokeDasharray={`${overallScore}, 100`}
                   />
                 </svg>
-                <div className="absolute inset-0 flex items-center justify-center">
-                  <span className="text-2xl font-bold text-green-600">{overallScore}%</span>
+                <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 text-3xl font-bold text-gray-900">
+                  {overallScore}%
                 </div>
               </div>
-              <p className="text-sm text-gray-600">Overall Compliance Score</p>
+              <p className="text-gray-600">Overall Compliance Score</p>
             </div>
           </CardContent>
         </Card>
 
-        {/* Regulation Coverage */}
-        <Card className="lg:col-span-2">
-          <CardHeader>
-            <CardTitle>Regulation Coverage</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="grid grid-cols-3 gap-4">
-              <div className="text-center">
-                <div className="relative w-16 h-16 mx-auto mb-2">
-                  <svg className="w-16 h-16 transform -rotate-90" viewBox="0 0 36 36">
-                    <path d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" fill="none" stroke="#e5e7eb" strokeWidth="3"/>
-                    <path d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" fill="none" stroke="#3b82f6" strokeWidth="3" strokeDasharray="85, 100"/>
-                  </svg>
-                  <div className="absolute inset-0 flex items-center justify-center">
-                    <span className="text-xs font-bold">85%</span>
-                  </div>
-                </div>
-                <p className="text-xs text-gray-600">ISO 27001</p>
-              </div>
-              <div className="text-center">
-                <div className="relative w-16 h-16 mx-auto mb-2">
-                  <svg className="w-16 h-16 transform -rotate-90" viewBox="0 0 36 36">
-                    <path d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" fill="none" stroke="#e5e7eb" strokeWidth="3"/>
-                    <path d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" fill="none" stroke="#10b981" strokeWidth="3" strokeDasharray="95, 100"/>
-                  </svg>
-                  <div className="absolute inset-0 flex items-center justify-center">
-                    <span className="text-xs font-bold">95%</span>
-                  </div>
-                </div>
-                <p className="text-xs text-gray-600">IIA Standards</p>
-              </div>
-              <div className="text-center">
-                <div className="relative w-16 h-16 mx-auto mb-2">
-                  <svg className="w-16 h-16 transform -rotate-90" viewBox="0 0 36 36">
-                    <path d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" fill="none" stroke="#e5e7eb" strokeWidth="3"/>
-                    <path d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" fill="none" stroke="#f59e0b" strokeWidth="3" strokeDasharray="78, 100"/>
-                  </svg>
-                  <div className="absolute inset-0 flex items-center justify-center">
-                    <span className="text-xs font-bold">78%</span>
-                  </div>
-                </div>
-                <p className="text-xs text-gray-600">SOX</p>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
+        {/* Compliance Status Metrics */}
+        <div className="lg:col-span-2 grid grid-cols-1 md:grid-cols-3 gap-6">
+          <MetricCard
+            title="Total Requirements"
+            value={totalCompliance}
+            subtitle="All tracked compliance items"
+            icon={Shield}
+            color="blue"
+          />
+          <MetricCard
+            title="Compliant"
+            value={compliantCount}
+            subtitle="Requirements met"
+            icon={CheckCircle}
+            color="green"
+          />
+          <MetricCard
+            title="In Progress"
+            value={inProgressCount}
+            subtitle="Currently being addressed"
+            icon={Clock}
+            color="yellow"
+          />
+          <MetricCard
+            title="Gap Found"
+            value={gapCount}
+            subtitle="Non-compliant items"
+            icon={AlertTriangle}
+            color="red"
+          />
+          <MetricCard
+            title="Upcoming Reviews"
+            value={upcomingDeadlines.length}
+            subtitle="Within next 30 days"
+            icon={Calendar}
+            color="purple"
+          />
+          <MetricCard
+            title="Average Score"
+            value={`${overallScore}%`}
+            subtitle="Across all requirements"
+            icon={TrendingUp}
+            color="teal"
+          />
+        </div>
       </div>
 
-      {/* Upcoming Deadlines */}
+      {/* B. Compliance List */}
       <Card>
         <CardHeader>
-          <CardTitle className="flex items-center space-x-2">
-            <Clock className="h-5 w-5 text-orange-600" />
-            <span>Upcoming Deadlines</span>
+          <CardTitle className="flex items-center justify-between">
+            <span>{t('complianceRequirements')}</span>
+            <div className="flex space-x-2">
+              <div className="relative">
+                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
+                <Input
+                  placeholder={t('searchCompliance')}
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                  className="pl-10"
+                />
+              </div>
+              <Select value={statusFilter} onValueChange={setStatusFilter}>
+                <SelectTrigger className="w-48">
+                  <SelectValue placeholder="Filter by Status" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">All Statuses</SelectItem>
+                  <SelectItem value="compliant">Compliant</SelectItem>
+                  <SelectItem value="inprogress">In Progress</SelectItem>
+                  <SelectItem value="gapfound">Gap Found</SelectItem>
+                </SelectContent>
+              </Select>
+              <Select value={standardFilter} onValueChange={setStandardFilter}>
+                <SelectTrigger className="w-48">
+                  <SelectValue placeholder="Filter by Standard" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">All Standards</SelectItem>
+                  <SelectItem value="iso27001">ISO 27001</SelectItem>
+                  <SelectItem value="iiastandards">IIA Standards</SelectItem>
+                  <SelectItem value="soxcompliance">SOX Compliance</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
           </CardTitle>
         </CardHeader>
-        <CardContent>
-          <div className="space-y-3">
-            {upcomingDeadlines.map((item) => (
-              <div key={item.id} className="flex items-center justify-between p-3 bg-orange-50 rounded-lg">
-                <div>
-                  <p className="font-medium text-gray-900">{item.name}</p>
-                  <p className="text-sm text-gray-600">{item.requirementId}</p>
-                </div>
-                <div className="text-right">
-                  <p className="text-sm font-medium">{item.dueDate}</p>
-                  <p className={`text-xs ${
-                    item.daysRemaining <= 7 ? 'text-red-600' :
-                    item.daysRemaining <= 14 ? 'text-orange-600' :
-                    'text-yellow-600'
-                  }`}>
-                    {item.daysRemaining} days remaining
-                  </p>
-                </div>
-              </div>
-            ))}
-          </div>
+        <CardContent className="p-0">
+          {filteredCompliance.length === 0 ? (
+            <div className="text-center py-12">
+              <AlertTriangle className="h-12 w-12 text-gray-400 mx-auto mb-4" />
+              <h3 className="text-lg font-medium text-gray-900 mb-2">{t('noComplianceFound')}</h3>
+              <p className="text-gray-500">{t('tryAdjustingFilters')}</p>
+            </div>
+          ) : (
+            <div className="overflow-x-auto">
+              <table className="min-w-full divide-y divide-gray-200">
+                <thead className="bg-gray-50">
+                  <tr>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Requirement ID</th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Name</th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Standard</th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Score</th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Next Review</th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Days Remaining</th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+                  </tr>
+                </thead>
+                <tbody className="bg-white divide-y divide-gray-200">
+                  {filteredCompliance.map((item) => (
+                    <tr key={item.id}>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-blue-600">{item.requirementId}</td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{item.name}</td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{item.standard}</td>
+                      <td className="px-6 py-4 whitespace-nowrap">
+                        <Badge className={`${
+                          item.status === 'Compliant' ? 'bg-green-100 text-green-800' :
+                          item.status === 'In Progress' ? 'bg-blue-100 text-blue-800' :
+                          'bg-red-100 text-red-800'
+                        }`}>
+                          {item.status}
+                        </Badge>
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{item.score}%</td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{item.nextReview}</td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm">
+                        <span className={`font-medium ${
+                          item.daysRemaining <= 30 ? 'text-red-600' :
+                          item.daysRemaining <= 60 ? 'text-orange-600' :
+                          'text-green-600'
+                        }`}>
+                          {item.daysRemaining} days
+                        </span>
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                        <Dialog>
+                          <DialogTrigger asChild>
+                            <Button
+                              variant="outline"
+                              size="sm"
+                              onClick={() => setSelectedCompliance(item)}
+                            >
+                              {t('viewBtn')}
+                            </Button>
+                          </DialogTrigger>
+                          {selectedCompliance && <ComplianceDetailModal compliance={selectedCompliance} />}
+                        </Dialog>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          )}
         </CardContent>
       </Card>
 
-      {/* Metrics Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
-        <MetricCard
-          title="Total Controls"
-          value={totalCompliance}
-          subtitle="All compliance controls"
-          icon={Shield}
-          color="blue"
-        />
-        <MetricCard
-          title="Compliant"
-          value={compliantCount}
-          subtitle="Meeting requirements"
-          icon={CheckCircle}
-          color="green"
-        />
-        <MetricCard
-          title="In Progress"
-          value={inProgressCount}
-          subtitle="Under review"
-          icon={Clock}
-          color="orange"
-        />
-        <MetricCard
-          title="Gaps Found"
-          value={gapCount}
-          subtitle="Require attention"
-          icon={AlertTriangle}
-          color="red"
-        />
-      </div>
-
-      <div className="flex gap-6">
-        {/* B. Compliance Register (Main Content) */}
-        <div className="flex-1">
-          {/* Search and Filters */}
-          <Card className="mb-6">
-            <CardContent className="p-6">
-              <div className="flex flex-col md:flex-row gap-4">
-                <div className="flex-1">
-                  <div className="relative">
-                    <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
-                    <Input
-                      placeholder={t('searchCompliance')}
-                      value={searchTerm}
-                      onChange={(e) => setSearchTerm(e.target.value)}
-                      className="pl-10"
-                    />
+      {/* C. Upcoming Deadlines */}
+      <Card>
+        <CardHeader>
+          <CardTitle className="flex items-center space-x-2">
+            <Calendar className="h-5 w-5 text-purple-600" />
+            <span>Upcoming Compliance Deadlines</span>
+          </CardTitle>
+          <CardDescription>Compliance requirements with upcoming review dates.</CardDescription>
+        </CardHeader>
+        <CardContent>
+          {upcomingDeadlines.length === 0 ? (
+            <p className="text-gray-500">No upcoming deadlines in the next 30 days.</p>
+          ) : (
+            <div className="space-y-4">
+              {upcomingDeadlines.map((item) => (
+                <div key={item.id} className="flex items-center justify-between p-3 border rounded-md">
+                  <div>
+                    <p className="font-medium text-gray-900">{item.name} ({item.standard})</p>
+                    <p className="text-sm text-gray-600">Responsible: {item.responsible}</p>
+                  </div>
+                  <div className="text-right">
+                    <p className="text-sm font-medium text-gray-900">Due: {item.nextReview}</p>
+                    <p className="text-xs text-red-600">{item.daysRemaining} days left</p>
                   </div>
                 </div>
-                <Select value={statusFilter} onValueChange={setStatusFilter}>
-                  <SelectTrigger className="w-48">
-                    <SelectValue placeholder="All Status" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="all">All Status</SelectItem>
-                    <SelectItem value="compliant">Compliant</SelectItem>
-                    <SelectItem value="inprogress">In Progress</SelectItem>
-                    <SelectItem value="gapfound">Gap Found</SelectItem>
-                  </SelectContent>
-                </Select>
-                <Select value={standardFilter} onValueChange={setStandardFilter}>
-                  <SelectTrigger className="w-48">
-                    <SelectValue placeholder="All Standards" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="all">All Standards</SelectItem>
-                    <SelectItem value="iso27001">ISO 27001</SelectItem>
-                    <SelectItem value="iiastandards">IIA Standards</SelectItem>
-                    <SelectItem value="soxcompliance">SOX Compliance</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-            </CardContent>
-          </Card>
-
-          {/* Compliance Register Table */}
-          <Card>
-            <CardContent className="p-0">
-              {filteredCompliance.length === 0 ? (
-                <div className="text-center py-12">
-                  <Shield className="h-12 w-12 text-gray-400 mx-auto mb-4" />
-                  <h3 className="text-lg font-medium text-gray-900 mb-2">{t('noComplianceFound')}</h3>
-                  <p className="text-gray-500">Try adjusting your search criteria or add a new compliance item.</p>
-                </div>
-              ) : (
-                <div className="overflow-x-auto">
-                  <table className="w-full">
-                    <thead className="bg-gray-50 border-b border-gray-200">
-                      <tr>
-                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                          Requirement ID / Name
-                        </th>
-                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                          {t('standard')}
-                        </th>
-                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                          {t('responsible')}
-                        </th>
-                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                          {t('complianceStatus')}
-                        </th>
-                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                          {t('lastAssessment')}
-                        </th>
-                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                          Linked Items
-                        </th>
-                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                          {t('actions')}
-                        </th>
-                      </tr>
-                    </thead>
-                    <tbody className="bg-white divide-y divide-gray-200">
-                      {filteredCompliance.map((item) => (
-                        <tr key={item.id} className="hover:bg-gray-50">
-                          <td className="px-6 py-4 whitespace-nowrap">
-                            <div>
-                              <div className="text-sm font-medium text-blue-600">{item.requirementId}</div>
-                              <div className="text-sm text-gray-900">{item.name}</div>
-                            </div>
-                          </td>
-                          <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                            {item.standard}
-                          </td>
-                          <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                            {item.responsible}
-                          </td>
-                          <td className="px-6 py-4 whitespace-nowrap">
-                            <div className="flex items-center space-x-2">
-                              <Badge className={`${
-                                item.status === 'Compliant' ? 'bg-green-100 text-green-800' :
-                                item.status === 'In Progress' ? 'bg-blue-100 text-blue-800' :
-                                'bg-red-100 text-red-800'
-                              }`}>
-                                {item.status}
-                              </Badge>
-                              <span className="text-xs text-gray-500">{item.score}%</span>
-                            </div>
-                          </td>
-                          <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                            {item.lastAssessment}
-                          </td>
-                          <td className="px-6 py-4 whitespace-nowrap">
-                            <div className="flex space-x-1">
-                              {item.linkedAudits.length > 0 && (
-                                <Badge variant="outline" className="text-xs">
-                                  {item.linkedAudits.length} Audit{item.linkedAudits.length > 1 ? 's' : ''}
-                                </Badge>
-                              )}
-                              {item.linkedRisks.length > 0 && (
-                                <Badge variant="outline" className="text-xs">
-                                  {item.linkedRisks.length} Risk{item.linkedRisks.length > 1 ? 's' : ''}
-                                </Badge>
-                              )}
-                            </div>
-                          </td>
-                          <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                            <Dialog>
-                              <DialogTrigger asChild>
-                                <Button 
-                                  variant="outline" 
-                                  size="sm"
-                                  onClick={() => setSelectedCompliance(item)}
-                                >
-                                  {t('viewBtn')}
-                                </Button>
-                              </DialogTrigger>
-                              <ComplianceDetailModal compliance={selectedCompliance} />
-                            </Dialog>
-                          </td>
-                        </tr>
-                      ))}
-                    </tbody>
-                  </table>
-                </div>
-              )}
-            </CardContent>
-          </Card>
-        </div>
-
-        {/* C. Side Info Pane */}
-        {sidebarOpen && (
-          <div className="w-80">
-            <Card className="sticky top-6">
-              <CardHeader>
-                <CardTitle className="flex items-center justify-between">
-                  <span>Quick Insights</span>
-                  <Button 
-                    variant="ghost" 
-                    size="sm" 
-                    onClick={() => setSidebarOpen(false)}
-                  >
-                    ×
-                  </Button>
-                </CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-6">
-                {/* Key Metrics */}
-                <div>
-                  <h4 className="font-medium text-gray-900 mb-3">Key Metrics</h4>
-                  <div className="space-y-3">
-                    <div className="flex justify-between">
-                      <span className="text-sm text-gray-600">Total Controls</span>
-                      <span className="font-medium">{totalCompliance}</span>
-                    </div>
-                    <div className="flex justify-between">
-                      <span className="text-sm text-gray-600">Compliant</span>
-                      <span className="font-medium text-green-600">{compliantCount}</span>
-                    </div>
-                    <div className="flex justify-between">
-                      <span className="text-sm text-gray-600">Open Gaps</span>
-                      <span className="font-medium text-red-600">{gapCount}</span>
-                    </div>
-                    <div className="flex justify-between">
-                      <span className="text-sm text-gray-600">Compliance Rate</span>
-                      <span className="font-medium">{Math.round((compliantCount / totalCompliance) * 100)}%</span>
-                    </div>
-                  </div>
-                </div>
-
-                {/* Quick Links */}
-                <div>
-                  <h4 className="font-medium text-gray-900 mb-3">Quick Links</h4>
-                  <div className="space-y-2">
-                    <Button variant="outline" size="sm" className="w-full justify-start">
-                      <AlertTriangle className="h-4 w-4 mr-2" />
-                      View All Findings
-                    </Button>
-                    <Button variant="outline" size="sm" className="w-full justify-start">
-                      <CheckCircle className="h-4 w-4 mr-2" />
-                      Manage Actions
-                    </Button>
-                    <Button variant="outline" size="sm" className="w-full justify-start">
-                      <TrendingUp className="h-4 w-4 mr-2" />
-                      Risk Assessment
-                    </Button>
-                    <Button variant="outline" size="sm" className="w-full justify-start">
-                      <Calendar className="h-4 w-4 mr-2" />
-                      Schedule Review
-                    </Button>
-                  </div>
-                </div>
-
-                {/* Recent Activity */}
-                <div>
-                  <h4 className="font-medium text-gray-900 mb-3">Recent Activity</h4>
-                  <div className="space-y-3 text-sm">
-                    <div className="flex items-start space-x-2">
-                      <div className="w-2 h-2 bg-green-500 rounded-full mt-2"></div>
-                      <div>
-                        <p className="text-gray-900">ISO 27001 review completed</p>
-                        <p className="text-gray-500 text-xs">2 hours ago</p>
-                      </div>
-                    </div>
-                    <div className="flex items-start space-x-2">
-                      <div className="w-2 h-2 bg-blue-500 rounded-full mt-2"></div>
-                      <div>
-                        <p className="text-gray-900">SOX assessment updated</p>
-                        <p className="text-gray-500 text-xs">1 day ago</p>
-                      </div>
-                    </div>
-                    <div className="flex items-start space-x-2">
-                      <div className="w-2 h-2 bg-orange-500 rounded-full mt-2"></div>
-                      <div>
-                        <p className="text-gray-900">New evidence uploaded</p>
-                        <p className="text-gray-500 text-xs">2 days ago</p>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-          </div>
-        )}
-      </div>
-
-      {/* Summary Footer */}
-      <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4">
-        <div className="flex justify-between items-center text-sm">
-          <span className="font-medium text-yellow-800">{t('total')}</span>
-          <div className="flex space-x-6 text-yellow-700">
-            <span>Total Controls: {totalCompliance}</span>
-            <span>Compliant: {compliantCount}</span>
-            <span>Compliance Rate: {Math.round((compliantCount / totalCompliance) * 100)}%</span>
-          </div>
-        </div>
-      </div>
+              ))}
+            </div>
+          )}
+        </CardContent>
+      </Card>
     </div>
   );
 };
 
 export default Compliance;
+
 

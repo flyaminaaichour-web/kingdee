@@ -1,24 +1,64 @@
+
 import React, { useState } from 'react';
-import { Search, AlertTriangle, TrendingUp, Shield, Clock } from 'lucide-react';
+import { Search, AlertTriangle, TrendingUp, Shield, Clock, PlusCircle } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger, DialogFooter } from '@/components/ui/dialog';
 import { useLanguage } from '../contexts/LanguageContext';
-import { risks } from '../data/mockData';
+import { risks as initialRisks } from '../data/mockData';
 
 const RiskAssessment = () => {
   const { t } = useLanguage();
   const [searchTerm, setSearchTerm] = useState('');
   const [levelFilter, setLevelFilter] = useState('all');
   const [selectedRisk, setSelectedRisk] = useState(null);
+  const [risks, setRisks] = useState(initialRisks);
+  const [isNewRiskModalOpen, setIsNewRiskModalOpen] = useState(false);
+  const [newRiskData, setNewRiskData] = useState({
+    title: '',
+    category: '',
+    level: 'Low',
+    impact: 'Low',
+    likelihood: 'Low',
+    owner: '',
+    mitigation: '',
+  });
+
+  const handleNewRiskChange = (e) => {
+    const { id, value } = e.target;
+    setNewRiskData(prevData => ({ ...prevData, [id]: value }));
+  };
+
+  const handleNewRiskSubmit = () => {
+    const newId = `RSK-${String(risks.length + 1).padStart(3, '0')}`;
+    setRisks(prevRisks => [
+      ...prevRisks,
+      {
+        id: newId,
+        status: 'Open',
+        lastAssessment: new Date().toISOString().split('T')[0],
+        ...newRiskData,
+      },
+    ]);
+    setNewRiskData({
+      title: '',
+      category: '',
+      level: 'Low',
+      impact: 'Low',
+      likelihood: 'Low',
+      owner: '',
+      mitigation: '',
+    });
+    setIsNewRiskModalOpen(false);
+  };
 
   const filteredRisks = risks.filter(risk => {
     const matchesSearch = risk.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
                          risk.category.toLowerCase().includes(searchTerm.toLowerCase()) ||
                          risk.owner.toLowerCase().includes(searchTerm.toLowerCase());
-    const matchesLevel = levelFilter === 'all' || risk.level.toLowerCase() === levelFilter;
+    const matchesLevel = levelFilter === 'all' || risk.level.toLowerCase() === levelFilter.toLowerCase();
     return matchesSearch && matchesLevel;
   });
 
@@ -114,10 +154,81 @@ const RiskAssessment = () => {
             <TrendingUp className="h-4 w-4 mr-2" />
             {t('exportPdfBtn')}
           </Button>
-          <Button>
-            <AlertTriangle className="h-4 w-4 mr-2" />
-            {t('newRiskBtn')}
-          </Button>
+          <Dialog open={isNewRiskModalOpen} onOpenChange={setIsNewRiskModalOpen}>
+            <DialogTrigger asChild>
+              <Button>
+                <AlertTriangle className="h-4 w-4 mr-2" />
+                {t('newRiskBtn')}
+              </Button>
+            </DialogTrigger>
+            <DialogContent className="sm:max-w-[600px]">
+              <DialogHeader>
+                <DialogTitle>Create New Risk</DialogTitle>
+                <DialogDescription>Fill in the details for the new risk.</DialogDescription>
+              </DialogHeader>
+              <div className="grid gap-4 py-4">
+                <div className="grid grid-cols-4 items-center gap-4">
+                  <label htmlFor="title" className="text-right">Title</label>
+                  <Input id="title" value={newRiskData.title} onChange={handleNewRiskChange} className="col-span-3" />
+                </div>
+                <div className="grid grid-cols-4 items-center gap-4">
+                  <label htmlFor="category" className="text-right">Category</label>
+                  <Input id="category" value={newRiskData.category} onChange={handleNewRiskChange} className="col-span-3" />
+                </div>
+                <div className="grid grid-cols-4 items-center gap-4">
+                  <label htmlFor="level" className="text-right">Level</label>
+                  <Select id="level" value={newRiskData.level} onValueChange={(value) => setNewRiskData(prevData => ({ ...prevData, level: value }))}>
+                    <SelectTrigger className="col-span-3">
+                      <SelectValue placeholder="Select Level" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="Critical">Critical</SelectItem>
+                      <SelectItem value="High">High</SelectItem>
+                      <SelectItem value="Medium">Medium</SelectItem>
+                      <SelectItem value="Low">Low</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+                <div className="grid grid-cols-4 items-center gap-4">
+                  <label htmlFor="impact" className="text-right">Impact</label>
+                  <Select id="impact" value={newRiskData.impact} onValueChange={(value) => setNewRiskData(prevData => ({ ...prevData, impact: value }))}>
+                    <SelectTrigger className="col-span-3">
+                      <SelectValue placeholder="Select Impact" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="High">High</SelectItem>
+                      <SelectItem value="Medium">Medium</SelectItem>
+                      <SelectItem value="Low">Low</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+                <div className="grid grid-cols-4 items-center gap-4">
+                  <label htmlFor="likelihood" className="text-right">Likelihood</label>
+                  <Select id="likelihood" value={newRiskData.likelihood} onValueChange={(value) => setNewRiskData(prevData => ({ ...prevData, likelihood: value }))}>
+                    <SelectTrigger className="col-span-3">
+                      <SelectValue placeholder="Select Likelihood" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="High">High</SelectItem>
+                      <SelectItem value="Medium">Medium</SelectItem>
+                      <SelectItem value="Low">Low</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+                <div className="grid grid-cols-4 items-center gap-4">
+                  <label htmlFor="owner" className="text-right">Owner</label>
+                  <Input id="owner" value={newRiskData.owner} onChange={handleNewRiskChange} className="col-span-3" />
+                </div>
+                <div className="grid grid-cols-4 items-center gap-4">
+                  <label htmlFor="mitigation" className="text-right">Mitigation Plan</label>
+                  <Input id="mitigation" value={newRiskData.mitigation} onChange={handleNewRiskChange} className="col-span-3" />
+                </div>
+              </div>
+              <DialogFooter>
+                <Button type="submit" onClick={handleNewRiskSubmit}>Create Risk</Button>
+              </DialogFooter>
+            </DialogContent>
+          </Dialog>
         </div>
       </div>
 
@@ -225,10 +336,10 @@ const RiskAssessment = () => {
               </SelectTrigger>
               <SelectContent>
                 <SelectItem value="all">All Risk Levels</SelectItem>
-                <SelectItem value="critical">{t('critical')}</SelectItem>
-                <SelectItem value="high">{t('high')}</SelectItem>
-                <SelectItem value="medium">{t('medium')}</SelectItem>
-                <SelectItem value="low">{t('low')}</SelectItem>
+                <SelectItem value="Critical">{t('critical')}</SelectItem>
+                <SelectItem value="High">{t('high')}</SelectItem>
+                <SelectItem value="Medium">{t('medium')}</SelectItem>
+                <SelectItem value="Low">{t('low')}</SelectItem>
               </SelectContent>
             </Select>
           </div>
@@ -314,7 +425,7 @@ const RiskAssessment = () => {
                               {t('viewBtn')}
                             </Button>
                           </DialogTrigger>
-                          <RiskDetailModal risk={selectedRisk} />
+                          {selectedRisk && <RiskDetailModal risk={selectedRisk} />} 
                         </Dialog>
                       </td>
                     </tr>
@@ -342,4 +453,5 @@ const RiskAssessment = () => {
 };
 
 export default RiskAssessment;
+
 
