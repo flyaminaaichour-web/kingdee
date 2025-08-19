@@ -5,7 +5,7 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { format, addMonths, subMonths, startOfMonth, endOfMonth, startOfWeek, endOfWeek, isSameMonth, isSameDay, addDays, parseISO } from 'date-fns';
-import initialExtendedCompliance from '../data/complianceData'; // Import from new file
+import { extendedCompliance as initialExtendedCompliance } from '../data/complianceData';
 import { risks } from '../data/mockData'; // Using mockData for risks
 import { actions } from '../data/mockData'; // Using mockData for actions
 

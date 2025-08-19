@@ -9,7 +9,7 @@ import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, Di
 import { Badge } from '@/components/ui/badge';
 import { Progress } from '@/components/ui/progress';
 import { useLanguage } from '../contexts/LanguageContext';
-import initialExtendedCompliance from '../data/complianceData'; // Import from new file
+import { extendedCompliance as initialExtendedCompliance } from '../data/complianceData';
 
 const Compliance = () => {
   const { t } = useLanguage();
