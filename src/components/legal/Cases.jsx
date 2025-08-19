@@ -18,7 +18,59 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from '@/components/ui/dialog';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { cases as initialCases } from '../../data/legal/mockData';
+import { cases as importedCases } from '../../data/legal/mockData';
+
+// Fallback cases data
+const mockCasesData = [
+  {
+    id: 'C001',
+    caseNumber: '2024/001',
+    personalNumber: 'P123456',
+    year: 2024,
+    type: 'Preliminary',
+    department: 'Civil Service Bureau',
+    plaintiff: 'Government Entity',
+    defendant: 'John Doe',
+    status: 'Under Study',
+    amount: 50000,
+    assignedEmployee: 'Ahmed Al-Rashid',
+    lastUpdate: '2024-01-15',
+    summary: 'Contract dispute regarding IT services delivery and payment terms.'
+  },
+  {
+    id: 'C002',
+    caseNumber: '2024/002',
+    personalNumber: 'P789012',
+    year: 2024,
+    type: 'Appeal',
+    department: 'Government Development',
+    plaintiff: 'Ministry of Justice',
+    defendant: 'ABC Company',
+    status: 'Win',
+    amount: 75000,
+    assignedEmployee: 'Fatima Al-Zahra',
+    lastUpdate: '2024-01-10',
+    summary: 'Employment termination dispute with compensation claims.'
+  },
+  {
+    id: 'C003',
+    caseNumber: '2024/003',
+    personalNumber: 'P345678',
+    year: 2024,
+    type: 'Enforcement',
+    department: 'Civil Service Bureau',
+    plaintiff: 'State Treasury',
+    defendant: 'XYZ Corporation',
+    status: 'Loss',
+    amount: 120000,
+    assignedEmployee: 'Mohammed Al-Mansouri',
+    lastUpdate: '2024-01-08',
+    summary: 'Breach of contract for construction project delays.'
+  }
+];
+
+// Use imported cases if available, otherwise use fallback
+const initialCases = importedCases && Array.isArray(importedCases) ? importedCases : mockCasesData;
 
 const Cases = () => {
   const [selectedCase, setSelectedCase] = useState(null);
@@ -41,10 +93,21 @@ const Cases = () => {
 
   // Ensure IDs are numbers for Math.max to work correctly
   useEffect(() => {
-    setCases(prevCases => prevCases.map(caseItem => ({
-      ...caseItem,
-      id: typeof caseItem.id === 'string' ? parseInt(caseItem.id.replace('C', '')) : caseItem.id
-    })));
+    try {
+      setCases(prevCases => {
+        if (!Array.isArray(prevCases)) {
+          console.warn('Cases is not an array, using fallback data');
+          return mockCasesData;
+        }
+        return prevCases.map(caseItem => ({
+          ...caseItem,
+          id: typeof caseItem.id === 'string' ? parseInt(caseItem.id.replace('C', '')) : caseItem.id
+        }));
+      });
+    } catch (error) {
+      console.error('Error processing cases data:', error);
+      setCases(mockCasesData);
+    }
   }, []);
 
   const handleNewCaseChange = (e) => {

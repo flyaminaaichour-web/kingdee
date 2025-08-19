@@ -1,7 +1,7 @@
 import { Routes, Route, Navigate } from 'react-router-dom'
 import Layout from './legal/Layout'
 import Dashboard from './legal/Dashboard'
-import Cases from './legal/Cases'
+import CasesSimple from './legal/CasesSimple'
 import Investigations from './legal/Investigations'
 import Contracts from './legal/Contracts'
 import DisciplinaryCommittee from './legal/DisciplinaryCommittee'
@@ -14,7 +14,7 @@ function LegalApp() {
     <Routes>
       <Route path="/" element={<Layout currentPage="dashboard"><Dashboard /></Layout>} />
       <Route path="/dashboard" element={<Layout currentPage="dashboard"><Dashboard /></Layout>} />
-      <Route path="/cases" element={<Layout currentPage="cases"><Cases /></Layout>} />
+      <Route path="/cases" element={<Layout currentPage="cases"><CasesSimple /></Layout>} />
       <Route path="/investigations" element={<Layout currentPage="investigations"><Investigations /></Layout>} />
       <Route path="/contracts" element={<Layout currentPage="contracts"><Contracts /></Layout>} />
       <Route path="/disciplinary-committee" element={<Layout currentPage="disciplinary-committee"><DisciplinaryCommittee /></Layout>} />
