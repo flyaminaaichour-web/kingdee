@@ -1,26 +1,75 @@
 import React, { useState } from 'react';
-import { 
-  Search, 
-  Filter, 
-  Download, 
-  Calendar, 
-  User, 
-  DollarSign, 
-  FileText, 
-  Eye, 
+import {
+  Search,
+  Filter,
+  Download,
+  Calendar,
+  User,
+  DollarSign,
+  FileText,
+  Eye,
   Edit,
   ChevronDown,
-  Scale
+  Scale,
+  PlusCircle
 } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { cases } from '../../data/legal/mockData';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from '@/components/ui/dialog';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { cases as initialCases } from '../../data/legal/mockData';
 
 const Cases = () => {
   const [selectedCase, setSelectedCase] = useState(null);
   const [searchTerm, setSearchTerm] = useState('');
   const [statusFilter, setStatusFilter] = useState('All');
+  const [isNewCaseModalOpen, setIsNewCaseModalOpen] = useState(false);
+  const [cases, setCases] = useState(initialCases);
+  const [newCaseData, setNewCaseData] = useState({
+    caseNumber: '',
+    personalNumber: '',
+    status: 'Under Study',
+    plaintiff: '',
+    defendant: '',
+    amount: 0,
+    assignedEmployee: '',
+    department: '',
+    lastUpdate: new Date().toISOString().split('T')[0],
+    summary: '',
+  });
+
+  const handleNewCaseChange = (e) => {
+    const { id, value } = e.target;
+    setNewCaseData(prevData => ({
+      ...prevData,
+      [id]: id === 'amount' ? parseFloat(value) || 0 : value
+    }));
+  };
+
+  const handleNewCaseSubmit = () => {
+    const newId = cases.length > 0 ? Math.max(...cases.map(c => c.id)) + 1 : 1;
+    setCases(prevCases => [
+      ...prevCases,
+      {
+        id: newId,
+        ...newCaseData,
+      },
+    ]);
+    setNewCaseData({
+      caseNumber: '',
+      personalNumber: '',
+      status: 'Under Study',
+      plaintiff: '',
+      defendant: '',
+      amount: 0,
+      assignedEmployee: '',
+      department: '',
+      lastUpdate: new Date().toISOString().split('T')[0],
+      summary: '',
+    });
+    setIsNewCaseModalOpen(false);
+  };
 
   // Calculate summary metrics
   const totalCases = cases.length;
@@ -51,10 +100,70 @@ const Cases = () => {
             <Download className="h-4 w-4 mr-2" />
             Export PDF
           </Button>
-          <Button>
-            <Scale className="h-4 w-4 mr-2" />
-            New Case
-          </Button>
+          <Dialog open={isNewCaseModalOpen} onOpenChange={setIsNewCaseModalOpen}>
+            <DialogTrigger asChild>
+              <Button>
+                <Scale className="h-4 w-4 mr-2" />
+                New Case
+              </Button>
+            </DialogTrigger>
+            <DialogContent className="sm:max-w-[600px]">
+              <DialogHeader>
+                <DialogTitle>Create New Case</DialogTitle>
+                <DialogDescription>Fill in the details for the new legal case.</DialogDescription>
+              </DialogHeader>
+              <div className="grid gap-4 py-4">
+                <div className="grid grid-cols-4 items-center gap-4">
+                  <label htmlFor="caseNumber" className="text-right">Case Number</label>
+                  <Input id="caseNumber" value={newCaseData.caseNumber} onChange={handleNewCaseChange} className="col-span-3" />
+                </div>
+                <div className="grid grid-cols-4 items-center gap-4">
+                  <label htmlFor="personalNumber" className="text-right">Personal Number</label>
+                  <Input id="personalNumber" value={newCaseData.personalNumber} onChange={handleNewCaseChange} className="col-span-3" />
+                </div>
+                <div className="grid grid-cols-4 items-center gap-4">
+                  <label htmlFor="status" className="text-right">Status</label>
+                  <Select value={newCaseData.status} onValueChange={(value) => setNewCaseData(prevData => ({ ...prevData, status: value }))}>
+                    <SelectTrigger className="col-span-3">
+                      <SelectValue placeholder="Select Status" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="Win">Win</SelectItem>
+                      <SelectItem value="Loss">Loss</SelectItem>
+                      <SelectItem value="Under Study">Under Study</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+                <div className="grid grid-cols-4 items-center gap-4">
+                  <label htmlFor="plaintiff" className="text-right">Plaintiff</label>
+                  <Input id="plaintiff" value={newCaseData.plaintiff} onChange={handleNewCaseChange} className="col-span-3" />
+                </div>
+                <div className="grid grid-cols-4 items-center gap-4">
+                  <label htmlFor="defendant" className="text-right">Defendant</label>
+                  <Input id="defendant" value={newCaseData.defendant} onChange={handleNewCaseChange} className="col-span-3" />
+                </div>
+                <div className="grid grid-cols-4 items-center gap-4">
+                  <label htmlFor="amount" className="text-right">Amount</label>
+                  <Input id="amount" type="number" value={newCaseData.amount} onChange={handleNewCaseChange} className="col-span-3" />
+                </div>
+                <div className="grid grid-cols-4 items-center gap-4">
+                  <label htmlFor="assignedEmployee" className="text-right">Assigned Employee</label>
+                  <Input id="assignedEmployee" value={newCaseData.assignedEmployee} onChange={handleNewCaseChange} className="col-span-3" />
+                </div>
+                <div className="grid grid-cols-4 items-center gap-4">
+                  <label htmlFor="department" className="text-right">Department</label>
+                  <Input id="department" value={newCaseData.department} onChange={handleNewCaseChange} className="col-span-3" />
+                </div>
+                <div className="grid grid-cols-4 items-center gap-4">
+                  <label htmlFor="summary" className="text-right">Summary</label>
+                  <Input id="summary" value={newCaseData.summary} onChange={handleNewCaseChange} className="col-span-3" />
+                </div>
+              </div>
+              <DialogFooter>
+                <Button type="submit" onClick={handleNewCaseSubmit}>Create Case</Button>
+              </DialogFooter>
+            </DialogContent>
+          </Dialog>
         </div>
       </div>
 
@@ -73,15 +182,15 @@ const Cases = () => {
             <div className="space-y-3">
               <div className="flex justify-between">
                 <span className="text-gray-600">Recent Case Time:</span>
-                <span className="font-medium">2024-01-15</span>
+                <span className="font-medium">{cases.length > 0 ? cases[cases.length - 1].lastUpdate : '--'}</span>
               </div>
               <div className="flex justify-between">
                 <span className="text-gray-600">Recent Case Amount:</span>
-                <span className="font-medium">$125,000</span>
+                <span className="font-medium">${cases.length > 0 ? cases[cases.length - 1].amount.toLocaleString() : '0'}</span>
               </div>
               <div className="flex justify-between">
                 <span className="text-gray-600">Case Number:</span>
-                <span className="font-medium text-blue-600">2024-003</span>
+                <span className="font-medium text-blue-600">{cases.length > 0 ? cases[cases.length - 1].caseNumber : '--'}</span>
               </div>
               <div className="flex justify-between">
                 <span className="text-gray-600">Primary Contact Address:</span>
@@ -140,7 +249,7 @@ const Cases = () => {
               <div className="text-sm text-gray-600">Total Cases</div>
             </div>
             <div className="text-center">
-              <div className="text-3xl font-bold text-gray-900 mb-2">{totalValue.toLocaleString()}</div>
+              <div className="text-3xl font-bold text-gray-900 mb-2">${totalValue.toLocaleString()}</div>
               <div className="text-sm text-gray-600">Total Case Value</div>
             </div>
             <div className="text-center">
@@ -361,26 +470,11 @@ const Cases = () => {
                   </div>
                 </div>
               </div>
-              
+
               {/* Summary */}
               <div>
                 <h3 className="font-medium text-gray-900 mb-3">Case Summary</h3>
-                <p className="text-gray-600 leading-relaxed">{selectedCase.summary}</p>
-              </div>
-              
-              {/* Actions */}
-              <div className="flex justify-end space-x-3 pt-4 border-t border-gray-200">
-                <Button variant="outline" onClick={() => setSelectedCase(null)}>
-                  Close
-                </Button>
-                <Button>
-                  <Download className="h-4 w-4 mr-2" />
-                  Export PDF
-                </Button>
-                <Button>
-                  <Calendar className="h-4 w-4 mr-2" />
-                  Schedule Hearing
-                </Button>
+                <p className="text-gray-600 bg-gray-50 p-3 rounded-lg">{selectedCase.summary}</p>
               </div>
             </div>
           </div>
@@ -391,4 +485,5 @@ const Cases = () => {
 };
 
 export default Cases;
+
 
