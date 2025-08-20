@@ -340,11 +340,12 @@ function DataRequestSystem() {
                   <Button className="mt-4"><FileText className="mr-2 h-4 w-4" /> Download Dataset</Button>
                 </CardContent>
               </Card>
-              <Button onClick={() => setActiveTab('submission')}>Submit New Request</Button>
-                </div>
+              <Button onClick={() => setActiveTab("submission")}>Submit New Request</Button>
+            </div>
+          )}
         </div>
       </div>
-      <div style={{ textAlign: 'center', marginTop: '20px' }}>
+      <div style={{ textAlign: "center", marginTop: "20px" }}>
         <div className="container" style={{
           maxWidth: '800px',
           margin: 'auto',
