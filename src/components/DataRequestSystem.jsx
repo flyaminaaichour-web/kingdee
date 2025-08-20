@@ -368,13 +368,13 @@ function DataRequestSystem() {
 
           <h2 style={{ color: '#2c3e50', marginTop: '20px' }}>2. Multi-Department Routing</h2>
           <ul style={{ margin: '10px 0', paddingLeft: '20px' }}>
-            <li style={{ marginBottom: '10px' }}>The QInsight platform, acting as a centralized data hub, receives the request and applies logical routing based on predefined governance rules.</li>
+            <li style={{ marginBottom: '10px' }}>The Kingdee Data System platform, acting as a centralized data hub, receives the request and applies logical routing based on predefined governance rules.</li>
             <li style={{ marginBottom: '10px' }}>The request is automatically routed to relevant agencies: the Ministry of Commerce and Industry (for GDP and investment data) and the Ministry of Labour (for workforce statistics). This routing is enabled by metadata tagging and predefined workflows in the National Data Governance Program, which identifies which agencies hold the relevant data.</li>
           </ul>
 
           <h2 style={{ color: '#2c3e50', marginTop: '20px' }}>3. Inter-Agency Coordination</h2>
           <ul style={{ margin: '10px 0', paddingLeft: '20px' }}>
-            <li style={{ marginBottom: '10px' }}>The QInsight platform notifies both ministries, ensuring seamless communication. Each ministry verifies the availability of the requested data and checks for any classification restrictions (e.g., sensitive financial data requiring an NDA).</li>
+            <li style={{ marginBottom: '10px' }}>The Kingdee Data System platform notifies both ministries, ensuring seamless communication. Each ministry verifies the availability of the requested data and checks for any classification restrictions (e.g., sensitive financial data requiring an NDA).</li>
             <li style={{ marginBottom: '10px' }}>The National Data Governance Program’s protocols ensure that data-sharing agreements between agencies are followed, and duplicate efforts are avoided through centralized coordination.</li>
           </ul>
 
@@ -386,13 +386,13 @@ function DataRequestSystem() {
 
           <h2 style={{ color: '#2c3e50', marginTop: '20px' }}>5. Data Access or NDA Workflow</h2>
           <ul style={{ margin: '10px 0', paddingLeft: '20px' }}>
-            <li style={{ marginBottom: '10px' }}>If the dataset is non-classified, the QInsight platform aggregates the data from both ministries into a single downloadable file, accessible via the portal in the requested format.</li>
+            <li style={{ marginBottom: '10px' }}>If the dataset is non-classified, the Kingdee Data System platform aggregates the data from both ministries into a single downloadable file, accessible via the portal in the requested format.</li>
             <li style={{ marginBottom: '10px' }}>If sensitive data is involved (e.g., detailed investment records), the researcher is prompted to upload an NDA through the portal’s secure workflow. Once approved, access is granted with restrictions outlined in the NDA.</li>
           </ul>
 
           <h2 style={{ color: '#2c3e50', marginTop: '20px' }}>6. Internal Reporting</h2>
           <ul style={{ margin: '10px 0', paddingLeft: '20px' }}>
-            <li style={{ marginBottom: '10px' }}>Internal users (e.g., NPC analysts) monitor the request’s progress via QInsight’s dashboard, which tracks metrics like request volume, processing times, and agency responsiveness.</li>
+            <li style={{ marginBottom: '10px' }}>Internal users (e.g., NPC analysts) monitor the request’s progress via Kingdee Data System’s dashboard, which tracks metrics like request volume, processing times, and agency responsiveness.</li>
             <li style={{ marginBottom: '10px' }}>The Qatar Data Trust Index may also log the dataset’s quality and compliance for future audits.</li>
           </ul>
         </div>
