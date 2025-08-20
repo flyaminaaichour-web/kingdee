@@ -341,12 +341,102 @@ function DataRequestSystem() {
                 </CardContent>
               </Card>
               <Button onClick={() => setActiveTab('submission')}>Submit New Request</Button>
-            </div>
-          )}
+            </div          </div>
         </div>
       </div>
-    </div>
-  );
+      <div style={{ textAlign: 'center', marginTop: '20px' }}>
+        <div dangerouslySetInnerHTML={{ __html: `
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Qatar Open Data Portal - Dataset Request Process</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      line-height: 1.6;
+      margin: 0;
+      padding: 20px;
+      background-color: #f4f4f4;
+    }
+    .container {
+      max-width: 800px;
+      margin: auto;
+      background: #fff;
+      padding: 20px;
+      border-radius: 5px;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    }
+    h1, h2 {
+      color: #2c3e50;
+    }
+    h1 {
+      text-align: center;
+    }
+    h2 {
+      margin-top: 20px;
+    }
+    p {
+      margin: 10px 0;
+    }
+    ul {
+      margin: 10px 0;
+      padding-left: 20px;
+    }
+    li {
+      margin-bottom: 10px;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Qatar Open Data Portal - Dataset Request Process</h1>
+    <p><strong>Example: Processing a Dataset Request for Economic Development Data</strong></p>
+    <p>
+      A researcher submits a request via the <a href="http://www.data.gov.qa">Qatar Open Data Portal</a> for a dataset combining economic growth metrics (e.g., GDP growth, foreign investment inflows) and workforce statistics (e.g., employment rates by sector). Below is how the system handles this request, based on the described framework:
+    </p>
+
+    <h2>1. Request Submission</h2>
+    <ul>
+      <li>The researcher uses the online dataset request submission form on the Qatar Open Data Portal to specify their need for a combined dataset on economic and workforce metrics.</li>
+      <li>The form captures details like the dataset’s purpose (e.g., academic research), preferred format (e.g., CSV), and any specific timeframes (e.g., 2020–2025).</li>
+    </ul>
+
+    <h2>2. Multi-Department Routing</h2>
+    <ul>
+      <li>The QInsight platform, acting as a centralized data hub, receives the request and applies logical routing based on predefined governance rules.</li>
+      <li>The request is automatically routed to relevant agencies: the Ministry of Commerce and Industry (for GDP and investment data) and the Ministry of Labour (for workforce statistics). This routing is enabled by metadata tagging and predefined workflows in the National Data Governance Program, which identifies which agencies hold the relevant data.</li>
+    </ul>
+
+    <h2>3. Inter-Agency Coordination</h2>
+    <ul>
+      <li>The QInsight platform notifies both ministries, ensuring seamless communication. Each ministry verifies the availability of the requested data and checks for any classification restrictions (e.g., sensitive financial data requiring an NDA).</li>
+      <li>The National Data Governance Program’s protocols ensure that data-sharing agreements between agencies are followed, and duplicate efforts are avoided through centralized coordination.</li>
+    </ul>
+
+    <h2>4. Request Tracking</h2>
+    <ul>
+      <li>The researcher tracks the request’s status via the portal’s request tracking interface, which shows updates like “Request received,” “Under review by Ministry of Commerce,” or “Pending data compilation.”</li>
+      <li>The interface is user-friendly, reflecting the portal’s commitment to transparency and public engagement.</li>
+    </ul>
+
+    <h2>5. Data Access or NDA Workflow</h2>
+    <ul>
+      <li>If the dataset is non-classified, the QInsight platform aggregates the data from both ministries into a single downloadable file, accessible via the portal in the requested format.</li>
+      <li>If sensitive data is involved (e.g., detailed investment records), the researcher is prompted to upload an NDA through the portal’s secure workflow. Once approved, access is granted with restrictions outlined in the NDA.</li>
+    </ul>
+
+    <h2>6. Internal Reporting</h2>
+    <ul>
+      <li>Internal users (e.g., NPC analysts) monitor the request’s progress via QInsight’s dashboard, which tracks metrics like request volume, processing times, and agency responsiveness.</li>
+      <li>The Qatar Data Trust Index may also log the dataset’s quality and compliance for future audits.</li>
+    </ul>
+  </div>
+</body>
+</html>
+` }}></div>
+    </div> );
 }
 
 export default DataRequestSystem;
